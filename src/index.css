@@ -11,3 +11,21 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.battle {
+  width: 100%;
+  display: flex;
+}
+
+.battle>div {
+  flex-grow: 1;
+}
+
+.battle-results {
+  padding: 20px;
+  text-align: center;
+}
+
+.pokemon-state {
+  padding: 20px;
+}
