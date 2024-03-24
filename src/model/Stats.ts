@@ -1,9 +1,9 @@
 class Stats {
-    attack;
-    defense;
-    stamina;
+    attack: number;
+    defense: number;
+    stamina: number;
 
-    constructor(attack, defense, stamina) {
+    constructor(attack: number, defense: number, stamina: number) {
         this.attack = attack;
         this.defense = defense;
         this.stamina = stamina;

@@ -12,7 +12,7 @@ function BattleSideView({ battle, left }) {
 
 
     battle.log.forEach(entry => {
-        if (left == entry.data.left) {
+        if (left == entry.left) {
             // fill in time
             for (let i = turn + 1; i < entry.turn; i++) {
                 events.push(
@@ -33,7 +33,7 @@ function BattleSideView({ battle, left }) {
                     createdAt={'TURN: ' + entry.turn}
                     iconColor={iconColor}
                     icon={<BoltIcon />}>
-                    <div style={{ color: iconColor }}>{entry.data.text}</div>
+                    <div style={{ color: iconColor }}>{entry.text}</div>
                 </TimelineEvent>
             );
             turn = entry.turn;

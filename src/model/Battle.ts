@@ -1,23 +1,27 @@
 import { ENTRY_FAST_MOVE } from "../Constants";
 import TypeEffectiveness from "../TypeEffectiveness";
+import Pokedex from "./Pokedex";
+import Pokemon from "./Pokemon";
+import PokemonMove from "./PokemonMove";
+import Trainer from "./Trainer";
 
 class Battle {
-    pokedex;
+    pokedex: Pokedex;
 
     // trainers
-    trainer;
-    rocket;
+    trainer: TrainerState;
+    rocket: TrainerState;
 
     // pokemon
-    left;
-    right;
+    left!: PokemonState;
+    right!: PokemonState;
 
-    turn = -1;
-    winner;
+    turn: number = -1;
+    winner!: TrainerState;
 
-    log = [];
+    log: LogEntry[] = [];
 
-    constructor(pokedex, trainer, rocket) {
+    constructor(pokedex: Pokedex, trainer: any, rocket: any) {
         this.pokedex = pokedex;
 
         this.trainer = new TrainerState(trainer);
@@ -31,39 +35,38 @@ class Battle {
 
         // start the timer
         do {
-            this.#takeTurn();
+            this.takeTurn();
         } while (!this.winner);
     }
 
-    #takeTurn() {
+    private takeTurn() {
         this.turn++;
 
         // const canTrainerUseChargedMove = this.#attemptChargedMove(this.left);
         // const canRocketUseChargedMove = this.#attemptChargedMove(this.right);
 
-        this.#useFastMove(this.left, this.right);
-        this.#useFastMove(this.right, this.left);
+        this.useFastMove(this.left, this.right);
+        this.useFastMove(this.right, this.left);
 
         // check win condition
-        this.#checkWinCondition();
+        this.checkWinCondition();
 
         if (this.winner) {
             console.log('CONGRATULATIONS ' + this.winner.trainer.name);
-            console.log(TypeEffectiveness._);
         }
     }
 
-    #attemptChargedMove(side) {
+    private attemptChargedMove() {
         return false; // TODO
     }
 
-    #useFastMove(attacker, defender) {
+    useFastMove(attacker: PokemonState, defender: PokemonState) {
         // can attack only if not on cooldown
         const move = this.pokedex.moves[attacker.pokemon.moves.fast];
         if (this.turn >= move.turns + attacker.last) {
             // charge energy and deal damage
             attacker.energy += move.energy;
-            const damage = this.#damageFormula(move, attacker, defender);
+            const damage = this.damageFormula(move, attacker, defender);
             defender.HP -= damage.amount;
 
             attacker.last = this.turn;
@@ -71,14 +74,14 @@ class Battle {
             // add to log
             const entry = new LogEntry(this.turn, ENTRY_FAST_MOVE);
             const eff = damage.eff == 1 ? '' : (damage.eff > 1 ? 'It\'s supereffective!' : 'It\'s not very effective!');
-            entry.data.text = `${attacker.pokemon.name} used ${move.id} (${damage.amount} damage). ${eff}`;
-            entry.data.left = (attacker == this.left);
+            entry.text = `${attacker.pokemon.name} used ${move.id} (${damage.amount} damage). ${eff}`;
+            entry.left = (attacker == this.left);
             entry.data.eff = damage.eff;
             this.log.push(entry);
         }
     }
 
-    #checkWinCondition() {
+    private checkWinCondition() {
         // check if trainer's pokemon died
         if (this.left.HP <= 0) {
             this.trainer.dead++;
@@ -96,18 +99,18 @@ class Battle {
         }
     }
 
-    #damageFormula(move, attacker, defender) {
+    private damageFormula(move: PokemonMove, attacker: PokemonState, defender: PokemonState) {
         // 1 + (0.5 * power * atk/def * STAB * eff)
 
-        const attack = this.pokedex.templates[attacker.pokemon.name].stats.attack;
-        const defense = this.pokedex.templates[defender.pokemon.name].stats.defense;
+        const attack = this.pokedex.pokemon[attacker.pokemon.name].stats.attack;
+        const defense = this.pokedex.pokemon[defender.pokemon.name].stats.defense;
         
-        const attackerTypes = this.pokedex.templates[attacker.pokemon.name].types;
+        const attackerTypes = this.pokedex.pokemon[attacker.pokemon.name].types;
         const STAB = attackerTypes.indexOf(move.type) < 0 ? 1 : 1.2;
         
         var eff = 1;
-        const typeEffectiveness = TypeEffectiveness._[move.type.substring(13)];
-        const defenderTypes = this.pokedex.templates[defender.pokemon.name].types;
+        const typeEffectiveness = TypeEffectiveness.get(move.type.substring(13));
+        const defenderTypes = this.pokedex.pokemon[defender.pokemon.name].types;
         defenderTypes.forEach(type => {
             eff *= typeEffectiveness.multiplier(type.substring(13));
         });
@@ -121,26 +124,25 @@ class Battle {
 }
 
 class LogEntry {
-    turn;
-    type;
-    data = {
-        text: "",
-        left: false
-    };
+    turn: number;
+    type: string;
+    text?: string;
+    left = false;
+    data: any = {};
 
-    constructor(turn, type) {
+    constructor(turn: number, type: string) {
         this.turn = turn;
         this.type = type;
     }
 }
 
 class TrainerState {
-    trainer;
-    team = [];
+    trainer: Trainer;
+    team: PokemonState[] = [];
 
     dead = 0;
 
-    constructor(trainer) {
+    constructor(trainer: Trainer) {
         this.trainer = trainer;
         this.team.push(new PokemonState(trainer.team[0]));
         this.team.push(new PokemonState(trainer.team[1]));
@@ -149,15 +151,15 @@ class TrainerState {
 }
 
 class PokemonState {
-    pokemon;
+    pokemon: Pokemon;
 
     // current HP and charged energy
-    HP;
-    energy = 0;
+    HP: number;
+    energy: number = 0;
 
     last = -10;
 
-    constructor(pokemon) {
+    constructor(pokemon: Pokemon) {
         this.pokemon = pokemon;
 
         // round down for actual HP
@@ -166,16 +168,16 @@ class PokemonState {
 }
 
 class Turn {
-    index;
-    constructor(index) {
+    index: number;
+    constructor(index: number) {
         this.index = index;
     }
 }
 
 class Action {
-    trainer;
-    pokemon;
-    constructor(trainer, pokemon) {
+    trainer: Trainer;
+    pokemon: Pokemon;
+    constructor(trainer: Trainer, pokemon: Pokemon) {
         this.trainer = trainer;
         this.pokemon = pokemon;
     }

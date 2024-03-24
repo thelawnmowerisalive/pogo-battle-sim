@@ -17,19 +17,21 @@ const ROCK = 'ROCK';
 const STEEL = 'STEEL';
 const WATER = 'WATER';
 
+const types = [BUG, DARK, DRAGON, ELECTRIC, FAIRY, FIGHTING, FIRE, FLYING, GHOST, GRASS, GROUND, ICE, NORMAL, POISON, PSYCHIC, ROCK, STEEL, WATER];
+
 class TypeEffectiveness {
    
-    superEffective;     // 1.6
-    notVeryEffective;   // 0.625
-    non;                // 0.391
+    superEffective: string[];     // 1.6
+    notVeryEffective: string[];   // 0.625
+    non: string[];                // 0.391
     
-    constructor(superEffective, notVeryEffective, non) {
+    constructor(superEffective: string[], notVeryEffective: string[], non: string[]) {
         this.superEffective = superEffective;
         this.notVeryEffective = notVeryEffective;
         this.non = non;
     }
 
-    multiplier(type) {
+    multiplier(type: string) {
         if (this.superEffective.indexOf(type) >= 0) {
             return 1.6;
         } else if (this.notVeryEffective.indexOf(type) >= 0) {
@@ -40,7 +42,11 @@ class TypeEffectiveness {
         return 1;
     }
 
-    static _ = {
+    static get(type: string) {
+        return (TypeEffectiveness._ as any)[type];
+    }
+
+    private static _ = {
         // BUG: new TypeEffectiveness(),
         
         DARK: new TypeEffectiveness([GHOST, PSYCHIC], [DARK, FAIRY, FIGHTING], []),

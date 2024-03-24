@@ -25,17 +25,17 @@ const lyra = new Trainer('Lyra');
 //   level: 31,
 //   ivs: new Stats(7, 8, 10)
 // });
-lyra.add(pokedex.templates['MACHAMP'], {
+lyra.add(pokedex.pokemon['MACHAMP'], {
   level: 40,
   ivs: new Stats(14, 11, 14),
   moves: { fast: 'COUNTER_FAST', charged_1: 'CROSS_CHOP' }
 });
-lyra.add(pokedex.templates['MAMOSWINE'], {
+lyra.add(pokedex.pokemon['MAMOSWINE'], {
   level: 41.5,
   ivs: new Stats(15, 9, 14),
   moves: { fast: 'POWDER_SNOW', charged_1: 'AVALANCHE' }
 });
-lyra.add(pokedex.templates['ROSERADE'], {
+lyra.add(pokedex.pokemon['ROSERADE'], {
   level: 40,
   ivs: new Stats(14, 15, 15),
   moves: { fast: 'RAZOR_LEAF_FAST', charged_1: 'SOLAR_BEAM' }
@@ -43,10 +43,10 @@ lyra.add(pokedex.templates['ROSERADE'], {
 console.log(lyra);
 
 const level = 42;
-const giovanni = new RocketTrainer('Giovanni', 1.15);
-giovanni.add(pokedex.templates['PERSIAN'], level);
-giovanni.add(pokedex.templates['GARCHOMP'], level);
-giovanni.add(pokedex.templates['KYOGRE'], level);
+const giovanni = new RocketTrainer('Giovanni', 42, 1.15);
+giovanni.add(pokedex.pokemon['PERSIAN']);
+giovanni.add(pokedex.pokemon['GARCHOMP']);
+giovanni.add(pokedex.pokemon['KYOGRE']);
 console.log(giovanni);
 
 const battle = new Battle(pokedex, lyra, giovanni);
