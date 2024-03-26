@@ -12,13 +12,13 @@ code {
     monospace;
 }
 
-.battle {
+.battle,
+.battle>table {
   width: 100%;
-  display: flex;
 }
 
-.battle>div {
-  flex-grow: 1;
+.battle-side {
+  font-size: small;
 }
 
 .battle-results {
@@ -28,4 +28,9 @@ code {
 
 .pokemon-state {
   padding: 20px;
+}
+
+.event {
+  min-width: 13px;
+  border-right: 1px solid lightgray;
 }

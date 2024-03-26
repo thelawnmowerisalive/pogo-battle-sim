@@ -1,14 +1,15 @@
 import Moves from "./Moves";
 import Pokemon from "./Pokemon";
 import PokemonBase from "./PokemonBase";
-import PokemonMove from "./PokemonMove";
 import Stats from "./Stats";
+import Strategy from "../battle/Strategy";
 
 class Trainer {
     name: string;
     level: number;
-    strategy: any;
     team: Pokemon[] = [];
+
+    strategy: Strategy = new Strategy();
 
     constructor(name: string, level: number) {
         this.name = name;
@@ -19,7 +20,7 @@ class Trainer {
         level,
         ivs,
         moves
-    }: Partial<Pokemon>) {
+    }: Partial<Pokemon>): Trainer {
         // initialize with defaults
         level = level || this.level;
         ivs = ivs || {
@@ -31,7 +32,7 @@ class Trainer {
         const pokemon = new Pokemon(base.id, level, ivs, moves);
 
         // stat = (base stat + IV) * CPM
-        const cpm = CPM[level*2-2];
+        const cpm = CPM[level * 2 - 2];
         pokemon.attack = Trainer.calcBaseStat(base, ivs, 'attack', cpm);
         pokemon.defense = Trainer.calcBaseStat(base, ivs, 'defense', cpm);
         pokemon.HP = Trainer.calcBaseStat(base, ivs, 'stamina', cpm);
@@ -40,9 +41,11 @@ class Trainer {
         pokemon.CP = Trainer.calcCP(pokemon);
 
         this.team.push(pokemon);
+
+        return this;
     }
 
-    static calcBaseStat(base: PokemonBase, ivs: Stats, stat: 'attack' | 'defense' |  'stamina', multiplier: number): number {
+    static calcBaseStat(base: PokemonBase, ivs: Stats, stat: 'attack' | 'defense' | 'stamina', multiplier: number): number {
         return (base.stats[stat] + ivs[stat]) * multiplier;
     }
 
