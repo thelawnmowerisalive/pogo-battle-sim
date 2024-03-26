@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/pogo-battle-sim/static/css/main.2968df1d.css",
+    "main.js": "/pogo-battle-sim/static/js/main.1bba579d.js",
+    "index.html": "/pogo-battle-sim/index.html",
+    "main.2968df1d.css.map": "/pogo-battle-sim/static/css/main.2968df1d.css.map",
+    "main.1bba579d.js.map": "/pogo-battle-sim/static/js/main.1bba579d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2968df1d.css",
+    "static/js/main.1bba579d.js"
+  ]
+}
