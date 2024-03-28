@@ -1,16 +1,12 @@
-import { ENTRY_FAST_MOVE } from "../Constants";
 
-import TypeEffectiveness from "../TypeEffectiveness";
 import Pokedex from "../model/Pokedex";
-import Pokemon from "../model/Pokemon";
 import PokemonMove from "../model/PokemonMove";
-import Trainer from "../model/Trainer";
 import PokemonState from "./PokemonState";
 import TrainerState from "./TrainerState";
 import Turn, { ID, Side } from "./Turn";
+import TypeEffectiveness from "./TypeEffectiveness";
 
 class Battle {
-    pokedex: Pokedex;
 
     // trainers
     trainer: TrainerState;
@@ -25,9 +21,7 @@ class Battle {
     turn: Turn = new Turn(-1);
     log: Turn[] = [];
 
-    constructor(pokedex: Pokedex, trainer: any, rocket: any) {
-        this.pokedex = pokedex;
-
+    constructor(trainer: any, rocket: any) {
         this.trainer = new TrainerState(trainer);
         this.rocket = new TrainerState(rocket);
     }
@@ -44,7 +38,7 @@ class Battle {
         // start the timer
         do {
             this.takeTurn();
-            if (this.turn.count > 200) {
+            if (this.turn.count > 300) {
                 // something went wrong, end the battle forcefully
                 break;
             }
@@ -71,7 +65,6 @@ class Battle {
 
         // add to log now, in case the attacks add their own over-entries on this turn
         this.log.push(this.turn);
-        console.log('TURN ' + this.turn.count);
 
         // check win condition
         this.checkWinConditionForSide(LEFT);
@@ -94,9 +87,9 @@ class Battle {
 
         // pick the charged move with the lowest energy
         // CAUTION: energy is a negative number!
-        const charged_1 = this.pokedex.moves[attacker.pokemon.moves.charged_1];
+        const charged_1 = Pokedex.INSTANCE.moves[attacker.pokemon.moves.charged_1];
         const charged_2 = attacker.pokemon.moves.charged_2 ?
-            this.pokedex.moves[attacker.pokemon.moves.charged_2] : undefined;
+            Pokedex.INSTANCE.moves[attacker.pokemon.moves.charged_2] : undefined;
         var move = charged_1;
         if (charged_2) {
             if (charged_2.energy > charged_1.energy) {
@@ -178,7 +171,7 @@ class Battle {
         const defender = left ? this.right : this.left;
 
         // can attack only if not on cooldown
-        const move = this.pokedex.moves[attacker.pokemon.moves.fast];
+        const move = Pokedex.INSTANCE.moves[attacker.pokemon.moves.fast];
         if (this.turn.count >= move.turns + attacker.last) {
             // charge energy and deal damage
             attacker.energy += move.energy;
@@ -252,19 +245,20 @@ class Battle {
         }
     }
 
+    // TODO TODO TODO USE CORRECT MODIFIER !!!
     private damageFormula(move: PokemonMove, attacker: PokemonState, defender: PokemonState) {
         // 1 + (0.5 * power * atk/def * STAB * eff)
 
-        const attack = this.pokedex.pokemon[attacker.pokemon.name].stats.attack;
-        const defense = this.pokedex.pokemon[defender.pokemon.name].stats.defense;
+        const attack = Pokedex.INSTANCE.pokemon[attacker.pokemon.name].stats.attack;
+        const defense = Pokedex.INSTANCE.pokemon[defender.pokemon.name].stats.defense;
 
-        const attackerTypes = this.pokedex.pokemon[attacker.pokemon.name].types;
+        const attackerTypes = Pokedex.INSTANCE.pokemon[attacker.pokemon.name].types;
         const STAB = attackerTypes.indexOf(move.type) < 0 ? 1 : 1.2;
 
         var eff = 1;
         const type = move.type.substring(13);
         const typeEffectiveness = TypeEffectiveness.get(type);
-        const defenderTypes = this.pokedex.pokemon[defender.pokemon.name].types;
+        const defenderTypes = Pokedex.INSTANCE.pokemon[defender.pokemon.name].types;
         defenderTypes.forEach(type => {
             eff *= typeEffectiveness.multiplier(type.substring(13));
         });

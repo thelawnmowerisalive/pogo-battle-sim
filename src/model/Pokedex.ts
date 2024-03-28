@@ -1,3 +1,5 @@
+import { POKEDEX } from "../Constants";
+import { getCachedData } from "../updateData";
 import Names from "./Names";
 import PokemonBase from "./PokemonBase";
 import PokemonMove from "./PokemonMove";
@@ -16,12 +18,28 @@ type MoveMap = {
     [key: string]: PokemonMove;
 }
 
-
-
 class Pokedex {
     pokemon: PokemonMap = {};
     types: TypeMap = {};
     moves: MoveMap = {};
+
+    ready: boolean = false;
+
+    static INSTANCE: Pokedex;
+
+    private constructor() { }
+
+    static async initialize(): Promise<boolean> {
+        if (!this.INSTANCE) {
+            // initialize
+            this.INSTANCE = new Pokedex();
+            for (let pokemon of await getCachedData(POKEDEX)) {
+                this.INSTANCE.add(pokemon);
+            }
+            this.INSTANCE.ready = true;
+        }
+        return this.INSTANCE.ready;
+    }
 
     add({
         formId, names, stats,

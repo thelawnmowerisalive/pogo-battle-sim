@@ -12,6 +12,15 @@ code {
     monospace;
 }
 
+.trainers {
+  width: 100%;
+  display: flex;
+}
+
+.trainers > div {
+  flex: 1 1 0px;
+}
+
 .battle,
 .battle>table {
   width: 100%;
@@ -33,4 +42,14 @@ code {
 .event {
   min-width: 13px;
   border-right: 1px solid lightgray;
+}
+
+.row {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+}
+
+.col {
+  flex: 1 1 0px;
 }

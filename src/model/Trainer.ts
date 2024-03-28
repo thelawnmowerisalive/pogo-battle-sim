@@ -1,8 +1,8 @@
+import Strategy from "../battle/Strategy";
 import Moves from "./Moves";
 import Pokemon from "./Pokemon";
 import PokemonBase from "./PokemonBase";
 import Stats from "./Stats";
-import Strategy from "../battle/Strategy";
 
 class Trainer {
     name: string;
@@ -16,33 +16,32 @@ class Trainer {
         this.level = level;
     }
 
-    add(base: PokemonBase, {
+    train(base: PokemonBase, {
         level,
         ivs,
         moves
-    }: Partial<Pokemon>): Trainer {
+    }: Partial<Pokemon>): Pokemon {
         // initialize with defaults
         level = level || this.level;
-        ivs = ivs || {
-            attack: 15,
-            defense: 15,
-            stamina: 15
-        }
+        ivs = ivs || { attack: 15, defense: 15, stamina: 15 };
         moves = moves || Trainer.randomizeMoveset(base);
+
         const pokemon = new Pokemon(base.id, level, ivs, moves);
 
         // stat = (base stat + IV) * CPM
-        const cpm = CPM[level * 2 - 2];
-        pokemon.attack = Trainer.calcBaseStat(base, ivs, 'attack', cpm);
-        pokemon.defense = Trainer.calcBaseStat(base, ivs, 'defense', cpm);
-        pokemon.HP = Trainer.calcBaseStat(base, ivs, 'stamina', cpm);
+        const multiplier = this.getMultiplier(level);
+        pokemon.attack = Trainer.calcBaseStat(base, ivs, 'attack', multiplier);
+        pokemon.defense = Trainer.calcBaseStat(base, ivs, 'defense', multiplier);
+        pokemon.HP = Trainer.calcBaseStat(base, ivs, 'stamina', multiplier);
 
         // cp = 0.1 * (attack * sqrt(defense) * sqrt(hp))
         pokemon.CP = Trainer.calcCP(pokemon);
 
-        this.team.push(pokemon);
+        return pokemon;
+    }
 
-        return this;
+    getMultiplier(level: number): number {
+        return CPM[level * 2 - 2];
     }
 
     static calcBaseStat(base: PokemonBase, ivs: Stats, stat: 'attack' | 'defense' | 'stamina', multiplier: number): number {

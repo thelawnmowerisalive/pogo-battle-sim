@@ -11,37 +11,29 @@ class RocketTrainer extends Trainer {
         this.rank = rank;
     }
 
-    add(base: PokemonBase): RocketTrainer {
+    train(base: PokemonBase, {
+        level,
+        ivs,
+        moves
+    }: Partial<Pokemon>): Pokemon {
         // ivs for rockets are as follows:
         // attack = floor(2/3 * base atk + 25)
         // defense = 15
         // stamina = 15
-        const ivs = new Stats(
-            Math.floor(2 * base.stats.attack / 3 + 25),
-            15,
-            15
-        );
-
-        // randomize moveset
-        const moves = Trainer.randomizeMoveset(base);
-
-        const pokemon = new Pokemon(base.id, this.level, ivs, moves);
+        const pokemon = super.train(base, {
+            level: this.level,
+            ivs: new Stats(Math.floor(2 * base.stats.attack / 3 + 25), 15, 15),
+            moves
+        });
+        // HP has a special formula, so we override it here
+        pokemon.HP = Math.floor(Trainer.calcBaseStat(base, pokemon.ivs, 'stamina', 0.6)) * this.getMultiplier(this.level);
+        
         pokemon.shadow = true;
+        return pokemon;
+    }
 
-        // stat = (base stat + IV) * stat multiplier * rCPM * rank
-        const multiplier = this.rank * rCPM[this.level - 8];
-        pokemon.attack = Trainer.calcBaseStat(base, ivs, 'attack', multiplier);
-        pokemon.defense = Trainer.calcBaseStat(base, ivs, 'defense', multiplier);
-
-        // for HP, the calc includes a special 0.6 multiplier
-        pokemon.HP = Math.floor(Trainer.calcBaseStat(base, ivs, 'stamina', 0.6)) * multiplier;
-
-        // cp is standard formula
-        pokemon.CP = Trainer.calcCP(pokemon);
-
-        this.team.push(pokemon);
-
-        return this;
+    getMultiplier(level: number): number {
+        return this.rank * rCPM[this.level - 8];
     }
 }
 

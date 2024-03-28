@@ -1,6 +1,5 @@
 import React from "react";
-import { Circle, Close, HexagonTwoTone, Loop, Square, SwipeOutlined } from "../../node_modules/@mui/icons-material/index";
-import { Tooltip } from "../../node_modules/@mui/material/index";
+import { Icon, Popup } from "semantic-ui-react";
 import Battle from "../battle/Battle";
 import { ID, Side } from "../battle/Turn";
 
@@ -15,24 +14,29 @@ function BattleSideView({ battle, left }: { battle: Battle, left: boolean }) {
         var icon = <div></div>
 
         if (side.type == ID.FAST_MOVE) {
-            icon = <Square htmlColor={COLORS[side.data.type]} fontSize="inherit" />;
+            icon = <Icon name="square" color={COLORS[side.data.type]} size="small" />;
         } else if (side.type == ID.CHARGED_MOVE) {
-            icon = <Circle htmlColor={COLORS[side.data.type]} fontSize="large" />;
+            icon = <Icon name="circle" color={COLORS[side.data.type]} size="large" />;
         } else if (side.type == ID.CHARGING) {
-            icon = <SwipeOutlined htmlColor="LightGray" fontSize="large" />
+            // icon = <SwipeOutlined htmlColor="LightGray" fontSize="large" />
+            <Icon.Group size='huge'>
+                <Icon size='big' name='circle outline' />
+                <Icon name='user' />
+            </Icon.Group>
         } else if (side.type == ID.SHIELDING) {
-            icon = <HexagonTwoTone htmlColor="Violet" fontSize="large" />;
+            icon = <Icon name="shield" color="violet" size="large" />;
         } else if (side.type == ID.SWITCH_IN) {
-            icon = <Loop htmlColor="LightGray" fontSize="large" />;
+            icon = <Icon name="refresh" color="grey" size="large" />;
         } else if (side.type == ID.FAINTED) {
-            icon = <Close color="error" fontSize="large" />;
+            icon = <Icon name="close" color="red" fontSize="large" />;
         }
 
         events.push(
             <td className="event" key={turn.count + '' + turn.over}>
-                <Tooltip title={side.text}>
+                <Popup content=""/>
+                {/* <Tooltip title={side.text}>
                     {icon}
-                </Tooltip>
+                </Tooltip> */}
 
             </td>
         );

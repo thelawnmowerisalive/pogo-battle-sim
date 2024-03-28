@@ -1,5 +1,4 @@
 import Moves from "./Moves";
-import NamedResource from "./NamedResource";
 import Stats from "./Stats";
 
 class Pokemon {
