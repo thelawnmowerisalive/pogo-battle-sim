@@ -28,6 +28,9 @@ class RocketTrainer extends Trainer {
         // HP has a special formula, so we override it here
         pokemon.HP = Math.floor(Trainer.calcBaseStat(base, pokemon.ivs, 'stamina', 0.6)) * this.getMultiplier(this.level);
         
+        // recalc CP to account for the HP value
+        pokemon.CP = Trainer.calcCP(pokemon);
+
         pokemon.shadow = true;
         return pokemon;
     }

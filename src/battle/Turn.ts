@@ -21,13 +21,13 @@ class Side {
 }
 
 enum ID {
-    NIL,
-    SWITCH_IN,
-    FAST_MOVE,
-    CHARGED_MOVE,
-    CHARGING,
-    SHIELDING,
-    FAINTED
+    NIL = "NIL",
+    SWITCH_IN ="SWITCH_IN",
+    FAST_MOVE = "FAST_MOVE",
+    CHARGED_MOVE= "CHARGED_MOVE",
+    CHARGING= "CHARGING",
+    SHIELDING= "SHIELDING",
+    FAINTED= "FAINTED"
 }
 
 export default Turn;

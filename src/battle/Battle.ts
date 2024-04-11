@@ -142,7 +142,7 @@ class Battle {
 
             // add to log
             const eff = damage.eff == 1 ? ''
-                : (damage.eff > 1 ? 'It\'s supereffective!' : 'It\'s not very effective!');
+                : (damage.eff > 1 ? 'It\'s super effective!' : 'It\'s not very effective!');
             const side = new Side(ID.CHARGED_MOVE, `${attacker.pokemon.name} used ${move.id} (${damage.amount} damage). ${eff}`);
             side.data = damage;
             if (left) {
@@ -247,10 +247,11 @@ class Battle {
 
     // TODO TODO TODO USE CORRECT MODIFIER !!!
     private damageFormula(move: PokemonMove, attacker: PokemonState, defender: PokemonState) {
-        // 1 + (0.5 * power * atk/def * STAB * eff)
+        // 1 + (0.5 * power * atk/def * modifier)
+        // modifier = 1.3 * type eff * STAB * charge (assume 1 for now)
 
-        const attack = Pokedex.INSTANCE.pokemon[attacker.pokemon.name].stats.attack;
-        const defense = Pokedex.INSTANCE.pokemon[defender.pokemon.name].stats.defense;
+        const attack = attacker.pokemon.attack * (attacker.pokemon.shadow ? SHADOW_ATTACK_MODIFIER : 1);
+        const defense = defender.pokemon.defense * (defender.pokemon.shadow ? SHADOW_DEFENSE_MODIFIER : 1);
 
         const attackerTypes = Pokedex.INSTANCE.pokemon[attacker.pokemon.name].types;
         const STAB = attackerTypes.indexOf(move.type) < 0 ? 1 : 1.2;
@@ -263,10 +264,12 @@ class Battle {
             eff *= typeEffectiveness.multiplier(type.substring(13));
         });
 
+        const modifier = 1.3 * eff * STAB;
+
         return {
             eff,
             type,
-            amount: Math.floor(1 + (0.5 * move.power * (attack / defense) * STAB * eff))
+            amount: Math.floor(1 + (0.5 * move.power * (attack / defense) * modifier))
         };
     }
 
@@ -274,5 +277,8 @@ class Battle {
 
 const LEFT = true;
 const RIGHT = false;
+
+const SHADOW_ATTACK_MODIFIER = 6 / 5;
+const SHADOW_DEFENSE_MODIFIER = 5 / 6;
 
 export default Battle;

@@ -12,18 +12,24 @@ code {
     monospace;
 }
 
+.team .buttons {
+  padding: 0 !important;
+}
+
 .trainers {
   width: 100%;
   display: flex;
 }
 
-.trainers > div {
+.trainers>div {
   flex: 1 1 0px;
 }
 
-.battle,
-.battle>table {
+.battle {
   width: 100%;
+  overflow-x: scroll;
+  margin-bottom: 20px;
+  padding: 6px;
 }
 
 .battle-side {
@@ -41,7 +47,7 @@ code {
 
 .event {
   min-width: 13px;
-  border-right: 1px solid lightgray;
+  /* border-right: 1px solid lightgray; */
 }
 
 .row {

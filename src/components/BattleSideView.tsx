@@ -3,7 +3,7 @@ import { Icon, Popup } from "semantic-ui-react";
 import Battle from "../battle/Battle";
 import { ID, Side } from "../battle/Turn";
 
-function BattleSideView({ battle, left }: { battle: Battle, left: boolean }) {
+function BattleSideView({ battle, left }: { battle: Battle, left?: boolean }) {
     const trainer = left ? battle.trainer : battle.rocket;
     const pokemon = left ? battle.left : battle.right;
 
@@ -14,17 +14,13 @@ function BattleSideView({ battle, left }: { battle: Battle, left: boolean }) {
         var icon = <div></div>
 
         if (side.type == ID.FAST_MOVE) {
-            icon = <Icon name="square" color={COLORS[side.data.type]} size="small" />;
+            icon = <Icon name="square" style={{ color: COLORS[side.data.type] }} size="small" />;
         } else if (side.type == ID.CHARGED_MOVE) {
-            icon = <Icon name="circle" color={COLORS[side.data.type]} size="large" />;
+            icon = <Icon name="circle" style={{ color: COLORS[side.data.type] }} size="large" />;
         } else if (side.type == ID.CHARGING) {
-            // icon = <SwipeOutlined htmlColor="LightGray" fontSize="large" />
-            <Icon.Group size='huge'>
-                <Icon size='big' name='circle outline' />
-                <Icon name='user' />
-            </Icon.Group>
+            icon = <Icon name="forward" color="grey" size="large" />;
         } else if (side.type == ID.SHIELDING) {
-            icon = <Icon name="shield" color="violet" size="large" />;
+            icon = <Icon name="shield" color="pink" size="large" />;
         } else if (side.type == ID.SWITCH_IN) {
             icon = <Icon name="refresh" color="grey" size="large" />;
         } else if (side.type == ID.FAINTED) {
@@ -33,11 +29,7 @@ function BattleSideView({ battle, left }: { battle: Battle, left: boolean }) {
 
         events.push(
             <td className="event" key={turn.count + '' + turn.over}>
-                <Popup content=""/>
-                {/* <Tooltip title={side.text}>
-                    {icon}
-                </Tooltip> */}
-
+                <Popup content={side.text} disabled={!side.text} trigger={icon}></Popup>
             </td>
         );
     });

@@ -1,72 +1,86 @@
 import React, { useEffect, useState } from "react";
-import { Dropdown, FormDropdown, Search, SearchProps } from "semantic-ui-react";
+import { FormDropdown, FormField, Search, SearchProps } from "semantic-ui-react";
 import Pokedex from "../model/Pokedex";
-import { handleDropdownChange, stringToDropdownItemProps } from "./utils";
-
-type Result = { title: string; id: string; }
+import { Consumer, handleDropdownChange, translater } from "./utils";
 
 class PokemonSelector {
 
   /**
    * Allows selection from the entire dex.
    */
-  static FromDex = ({ onChange }: { onChange: Function }) => {
-    const items: Result[] = [];
+  static FromDex = ({ name, onChange }: { name: string | undefined, onChange: Consumer<string> }) => {
+
+    const items: SearchProps[] = [];
     for (let name in Pokedex.INSTANCE.pokemon) {
       items.push({
-        title: name,
+        title: Pokedex.INSTANCE.pokemon[name].names.English,
         id: name
       });
     }
 
-    const [results, setResults] = useState([] as Result[]);
+    const [result, setResult] = useState(name);
+    useEffect(() => {
+      console.log(name);
+      setResult(name);
+    }, [name]);
+
+    const [results, setResults] = useState([] as SearchProps[]);
+
     const handleSearchChange = (event: any, { value }: SearchProps) => {
+      setResult(value || "");
       if (!value) {
         // no search string, clear results
         setResults([]);
         return;
       }
-      const results: Result[] = [];
+      const results: SearchProps[] = [];
       const searchString = value.toLowerCase();
       items.forEach(item => {
-        if (item.id.toLowerCase().startsWith(searchString)) {
+        if (item.title.toLowerCase().startsWith(searchString)) {
           results.push(item);
         }
       });
       setResults(results);
     }
 
-    const handleResultSelect = (event: any,  {result} : SearchProps) => {
-      onChange((result as Result).id);
+    const handleResultSelect = (event: any, { result }: SearchProps) => {
+      // setResult(result.title);
+      onChange(result.id);
     }
 
     return (
-      <Search
-        fluid
+      <FormField fluid label="Name"
+        control={Search}
         minCharacters={3}
+        value={result}
         results={results}
         onSearchChange={handleSearchChange}
-        onResultSelect={handleResultSelect} />
+        onResultSelect={handleResultSelect}>
+      </FormField>
     )
   }
 
   /**
    * Allows selection from a preset list of options.
    */
-  static FromOptions = ({ options, onChange }: { options: string[], onChange: Function }) => {
+  static FromOptions = ({ options, onChange }: { options: string[], onChange: Consumer<string> }) => {
     const [name, setName] = useState(options[0]);
-    useEffect(() => {
-      onChange(name);
-    }, [name]);
+
+    // listen for option changes (from the parent) and auto-select the first option
     useEffect(() => {
       setName(options[0]);
     }, [options]);
 
+    // listen for name changes to return the selected value to the parent
+    useEffect(() => {
+      onChange(name);
+    }, [name]);
+
     return (
-      <FormDropdown selection
-        label="Name"
+      <FormDropdown fluid label="Name"
+        selection
         value={name}
-        options={options.map(stringToDropdownItemProps)}
+        options={options.map(translater("pokemon"))}
         onChange={handleDropdownChange(setName)} />
     )
   }

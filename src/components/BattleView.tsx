@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Container, Grid, Rail } from "semantic-ui-react";
-import Battle from "../battle/Battle";
+import { Button, Container, Form, FormDropdown, FormInput, Grid } from "semantic-ui-react";
 import Pokedex from "../model/Pokedex";
 import RocketTrainer from "../model/RocketTrainer";
 import Trainer from "../model/Trainer";
-import RocketTrainerView from "./RocketTrainerView";
 import TrainerView from "./TrainerView";
+import { ROCKETS, getRocketMultiplier } from "./rockets";
+import { handleDropdownChange, handleInputChange, stringToDropdownItemProps } from "./utils";
+import Battle from "../battle/Battle";
+import BattleSideView from "./BattleSideView";
+import InstructionsView from "./InstructionsView";
 
 function BattleView() {
     // make sure the pokedex is ready
@@ -22,71 +25,80 @@ function BattleView() {
     const defaults = {
         level: 42,
         trainer: 'Trainer',
-        rocket: 'Giovanni'
+        rocket: ROCKETS[0]
     }
     const [trainer, setTrainer] = useState(new Trainer(defaults.trainer, defaults.level));
-    const [rocket, setRocket] = useState(new RocketTrainer(defaults.rocket, defaults.level, 1.15));
-    const [battle, setBattle] = useState(new Battle(trainer, rocket));
+    const [rocket, setRocket] = useState(new RocketTrainer(defaults.rocket, defaults.level, getRocketMultiplier(defaults.rocket)));
 
-    const items: any[] = [];
+    const [battle, setBattle] = useState(undefined as unknown as Battle);
 
-    function simulate() {
-        // battle.log.forEach(entry => {
-        //     items.push({
-        //         cardTitle: entry.count,
-        //         cardSubtitle: entry.left.text
-        //     });
+    const handleNameChange = (value: string) => {
+        setTrainer(new Trainer(value, trainer.level));
+    }
 
-        //     items.push({
-        //         cardTitle: entry.count,
-        //         cardSubtitle: entry.right.text
-        //     })
-        // });
+    const handleLevelChange = (value: number) => {
+        setTrainer(new Trainer(trainer.name, value));
+    }
 
-        // setBattle(battle);
+    const handleRocketChange = (value: string) => {
+        setRocket(new RocketTrainer(value, trainer.level, getRocketMultiplier(value)));
+    }
+
+    const startBattle = () => {
+        console.log(trainer);
+        console.log(rocket);
+
+        const x = new Battle(trainer, rocket);
+        x.simulate();
+        console.log(x);
+        setBattle(x);
     }
 
     return !ready ? <div>NOT INITIALIZED YET</div> : (
         <Container>
-            <Grid celled>
-                <Grid.Row>
-                    <Grid.Column computer={7} mobile={15}>
-                        <TrainerView trainer={trainer} onChange={setTrainer} />
-                    </Grid.Column>
-                    <Grid.Column width={1}>
-                        {/* divider */}
-                    </Grid.Column>
-                    <Grid.Column computer={7} mobile={15}>
-                        <RocketTrainerView trainer={rocket} onChange={setRocket} />
-                    </Grid.Column>
-                </Grid.Row>
+            {
+                battle ?
+                    <div className="battle">
+                        <table>
+                            <tbody>
+                                <BattleSideView battle={battle} left />
+                                <BattleSideView battle={battle} />
+                            </tbody>
+                        </table>
+                    </div>
+                    : <InstructionsView />
+            }
+
+            <Grid centered>
+                <Grid.Column widescreen={7}>
+                    <TrainerView trainer={trainer} />
+                </Grid.Column>
+
+                <Grid.Column widescreen={2}>
+                    <Form>
+                        <FormInput fluid label="Name"
+                            value={trainer.name}
+                            onChange={handleInputChange(handleNameChange)} />
+                        <FormInput fluid label="Level"
+                            type="number" min={8} max={50}
+                            value={trainer.level}
+                            onChange={handleInputChange(handleLevelChange, parseInt)} />
+
+                        <FormDropdown fluid label="Rocket"
+                            selection
+                            options={ROCKETS.map(stringToDropdownItemProps)}
+                            value={rocket.name}
+                            onChange={handleDropdownChange(handleRocketChange)} />
+
+                        <Button onClick={startBattle}>BATTLE</Button>
+                    </Form>
+                </Grid.Column>
+
+                <Grid.Column widescreen={7}>
+                    <TrainerView trainer={rocket} rocket />
+                </Grid.Column>
             </Grid>
-            {/* <div className="trainers">
-                
-                
-            </div>
-
-            <div className="battle">
-                <div className="battle-results">
-                    AND THE WINNER IS... {battle.winner?.trainer.name}
-                </div>
-
-                <PokemonStateView
-                    state={battle.left}>
-                </PokemonStateView>
-
-                <PokemonStateView
-                    state={battle.right}>
-                </PokemonStateView>
-
-                <table>
-                    <tbody>
-                        <BattleSideView battle={battle} left={true} />
-                        <BattleSideView battle={battle} left={false} />
-                    </tbody>
-                </table>
-            </div> */}
-        </Container>
+        </Container >
     )
 }
 
