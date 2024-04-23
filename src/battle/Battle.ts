@@ -1,4 +1,3 @@
-
 import Pokedex from "../model/Pokedex";
 import PokemonMove from "../model/PokemonMove";
 import PokemonState from "./PokemonState";
@@ -26,23 +25,26 @@ class Battle {
         this.rocket = new TrainerState(rocket);
     }
 
-    simulate() {
+    simulate(): Battle {
         // send first pokemon for each battler
         this.left = this.trainer.team[0];
         this.right = this.rocket.team[0];
 
         this.turn.left = new Side(ID.SWITCH_IN, this.trainer.trainer.name + ' sent out ' + this.left.pokemon.name);
         this.turn.right = new Side(ID.SWITCH_IN, this.rocket.trainer.name + ' sent out ' + this.right.pokemon.name);
-        this.log.push(this.turn);
+        this.addToLog(this.turn);
 
         // start the timer
         do {
             this.takeTurn();
+
             if (this.turn.count > 300) {
                 // something went wrong, end the battle forcefully
                 break;
             }
         } while (!this.winner);
+
+        return this;
     }
 
     private takeTurn() {
@@ -64,7 +66,7 @@ class Battle {
         }
 
         // add to log now, in case the attacks add their own over-entries on this turn
-        this.log.push(this.turn);
+        this.addToLog(this.turn);
 
         // check win condition
         this.checkWinConditionForSide(LEFT);
@@ -112,7 +114,7 @@ class Battle {
             } else {
                 turn.right = new Side(ID.CHARGING);
             }
-            this.log.push(turn);
+            this.addToLog(turn);
 
             // check if defender is shielding
             var shielding = false;
@@ -141,7 +143,7 @@ class Battle {
             defender.HP -= damage.amount;
 
             // add to log
-            const eff = damage.eff == 1 ? ''
+            const eff = damage.eff === 1 ? ''
                 : (damage.eff > 1 ? 'It\'s super effective!' : 'It\'s not very effective!');
             const side = new Side(ID.CHARGED_MOVE, `${attacker.pokemon.name} used ${move.id} (${damage.amount} damage). ${eff}`);
             side.data = damage;
@@ -181,7 +183,7 @@ class Battle {
             attacker.last = this.turn.count;
 
             // add to log
-            const eff = damage.eff == 1 ? ''
+            const eff = damage.eff === 1 ? ''
                 : (damage.eff > 1 ? 'It\'s supereffective!' : 'It\'s not very effective!');
             const side = new Side(ID.FAST_MOVE, `${attacker.pokemon.name} used ${move.id} (${damage.amount} damage). ${eff}`);
             side.data = damage;
@@ -207,7 +209,7 @@ class Battle {
             } else {
                 turn.right = side;
             }
-            this.log.push(turn);
+            this.addToLog(turn);
 
             if (trainer.dead >= trainer.team.length) {
                 // all this trainer's pokemon are dead, battle is over
@@ -235,7 +237,7 @@ class Battle {
                     this.right = pokemon;
                 }
 
-                this.log.push(turn);
+                this.addToLog(turn);
 
                 // stun rocket
                 this.rocket.wakeUpTurn = 6 + this.turn.count;
@@ -273,6 +275,25 @@ class Battle {
         };
     }
 
+    private addToLog(turn: Turn) {
+        this.log.push(turn);
+
+        // record the current HP and energy for everyone
+        turn.left.HP = this.trainer.team.map((state) => state.HP);
+        turn.left.energy = this.trainer.team.map((state) => state.energy);
+        turn.right.HP = this.rocket.team.map((state) => state.HP);
+        turn.right.energy = this.rocket.team.map((state) => state.energy);
+    }
+
+    public getTurn(key: string): Turn | undefined {
+        const count = parseInt(key);
+        const over = key.substring(key.indexOf('+') + 1);
+        for (let turn of this.log) {
+            if (count === turn.count && over === turn.over) {
+                return turn;
+            }
+        }
+    }
 }
 
 const LEFT = true;

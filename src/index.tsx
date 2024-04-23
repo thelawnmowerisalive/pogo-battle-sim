@@ -5,8 +5,6 @@ import BattleView from './components/BattleView';
 import 'semantic-ui-css/semantic.min.css';
 import './index.css';
 
-// await updateData();
-
 // const pokedex = new Pokedex();
 // for (let pokemon of await getCachedData(POKEDEX)) {
 //   pokedex.add(pokemon);

@@ -38,7 +38,7 @@ const stringToDropdownItemProps = (value: string): DropdownItemProps => {
   * @returns a handler for the form input (takes the event and data)
   */
 const handleInputChange = (setter: Function, parser: Function = (value: string) => { return value }) => {
-  return (event: any, { value }: InputOnChangeData) => {
+  return (_event: any, { value }: InputOnChangeData) => {
     setter(parser(value));
   }
 }
@@ -50,7 +50,7 @@ const handleInputChange = (setter: Function, parser: Function = (value: string) 
  * @returns a handler for the dropdown (takes the event and data)
  */
 const handleDropdownChange = (setter: Function) => {
-  return (event: any, { value }: DropdownProps) => {
+  return (_event: any, { value }: DropdownProps) => {
     setter(value);
   }
 }

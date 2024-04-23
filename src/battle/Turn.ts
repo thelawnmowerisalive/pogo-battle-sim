@@ -1,3 +1,13 @@
+enum ID {
+    NIL = "NIL",
+    SWITCH_IN ="SWITCH_IN",
+    FAST_MOVE = "FAST_MOVE",
+    CHARGED_MOVE= "CHARGED_MOVE",
+    CHARGING= "CHARGING",
+    SHIELDING= "SHIELDING",
+    FAINTED= "FAINTED"
+}
+
 class Turn {
     count: number;
     over: String;
@@ -14,20 +24,14 @@ class Side {
     type: ID;
     text: string;
     data: any = {};
+
+    HP!: number[];
+    energy!: number[];
+
     constructor(type: ID, text: string= '') {
         this.type = type;
         this.text = text;
     }
-}
-
-enum ID {
-    NIL = "NIL",
-    SWITCH_IN ="SWITCH_IN",
-    FAST_MOVE = "FAST_MOVE",
-    CHARGED_MOVE= "CHARGED_MOVE",
-    CHARGING= "CHARGING",
-    SHIELDING= "SHIELDING",
-    FAINTED= "FAINTED"
 }
 
 export default Turn;

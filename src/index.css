@@ -59,3 +59,24 @@ code {
 .col {
   flex: 1 1 0px;
 }
+
+.ui.progress.hp-bar:last-child {
+  margin: 0;
+}
+
+.ui.progress.hp-bar > .bar {
+  position: static;
+  min-width: 0;
+}
+
+.ui.progress.hp-bar > .bar::after {
+  animation: none;
+}
+
+.energy.statistic.right.floated {
+  margin: 0;
+}
+
+.ui.segments.team > .segment {
+  flex: 1 1 0;
+}

@@ -1,13 +1,13 @@
 import { POKEDEX } from "../Constants";
 import { getCachedData } from "../updateData";
 import Names from "./Names";
-import PokemonBase from "./PokemonBase";
+import PokemonTemplate from "./PokemonTemplate";
 import PokemonMove from "./PokemonMove";
 import PokemonType from "./PokemonType";
 import Stats from "./Stats";
 
 type PokemonMap = {
-    [key: string]: PokemonBase;
+    [key: string]: PokemonTemplate;
 };
 
 type TypeMap = {
@@ -33,10 +33,15 @@ class Pokedex {
         if (!this.INSTANCE) {
             // initialize
             this.INSTANCE = new Pokedex();
-            for (let pokemon of await getCachedData(POKEDEX)) {
-                this.INSTANCE.add(pokemon);
+            const pokedex = await getCachedData(POKEDEX);
+            if (!pokedex) {
+                return false;
+            } else {
+                for (let pokemon of pokedex) {
+                    this.INSTANCE.add(pokemon);
+                }
+                this.INSTANCE.ready = true;
             }
-            this.INSTANCE.ready = true;
         }
         return this.INSTANCE.ready;
     }
@@ -58,7 +63,7 @@ class Pokedex {
         eliteCinematicMoves: [],
         regionForms: any
     }) {
-        const pokemon = new PokemonBase(formId, names, stats);
+        const pokemon = new PokemonTemplate(formId, names, stats);
 
         // types
         primaryType && pokemon.types.push(this.addType(primaryType));

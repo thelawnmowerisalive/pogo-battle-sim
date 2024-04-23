@@ -20,13 +20,12 @@ class PokemonSelector {
 
     const [result, setResult] = useState(name);
     useEffect(() => {
-      console.log(name);
       setResult(name);
     }, [name]);
 
     const [results, setResults] = useState([] as SearchProps[]);
 
-    const handleSearchChange = (event: any, { value }: SearchProps) => {
+    const handleSearchChange = (_event: any, { value }: SearchProps) => {
       setResult(value || "");
       if (!value) {
         // no search string, clear results
@@ -43,8 +42,7 @@ class PokemonSelector {
       setResults(results);
     }
 
-    const handleResultSelect = (event: any, { result }: SearchProps) => {
-      // setResult(result.title);
+    const handleResultSelect = (_event: any, { result }: SearchProps) => {
       onChange(result.id);
     }
 
@@ -64,7 +62,7 @@ class PokemonSelector {
    * Allows selection from a preset list of options.
    */
   static FromOptions = ({ options, onChange }: { options: string[], onChange: Consumer<string> }) => {
-    const [name, setName] = useState(options[0]);
+    const [name, setName] = useState("");
 
     // listen for option changes (from the parent) and auto-select the first option
     useEffect(() => {
@@ -73,7 +71,7 @@ class PokemonSelector {
 
     // listen for name changes to return the selected value to the parent
     useEffect(() => {
-      onChange(name);
+      name && onChange(name);
     }, [name]);
 
     return (

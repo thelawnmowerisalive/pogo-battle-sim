@@ -2,7 +2,7 @@ import NamedResource from "./NamedResource";
 import Names from "./Names";
 import Stats from "./Stats";
 
-class PokemonBase extends NamedResource {
+class PokemonTemplate extends NamedResource {
     id: string;
     stats: Stats;
     types: string[] = [];
@@ -18,4 +18,4 @@ class PokemonBase extends NamedResource {
     }
 }
 
-export default PokemonBase;
+export default PokemonTemplate;

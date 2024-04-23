@@ -1,5 +1,5 @@
 import Pokemon from "./Pokemon";
-import PokemonBase from "./PokemonBase";
+import PokemonTemplate from "./PokemonTemplate";
 import Stats from "./Stats";
 import Trainer from "./Trainer";
 
@@ -11,7 +11,7 @@ class RocketTrainer extends Trainer {
         this.rank = rank;
     }
 
-    train(base: PokemonBase, {
+    train(base: PokemonTemplate, {
         level,
         ivs,
         moves

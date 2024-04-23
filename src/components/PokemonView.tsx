@@ -1,41 +1,32 @@
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
 import { DropdownItemProps, Form, FormDropdown, FormInput, Grid, InputOnChangeData, Segment, Statistic } from "semantic-ui-react";
 import Moves from "../model/Moves";
 import Pokedex from "../model/Pokedex";
 import Pokemon from "../model/Pokemon";
 import Stats from "../model/Stats";
-import Trainer from "../model/Trainer";
 import ImportExportView from "./ImportExportView";
 import PokemonSelector from "./PokemonSelector";
 import pokemonReducer, { ActionType } from "./pokemonReducer";
 import { handleDropdownChange, handleInputChange, translater } from "./utils";
+import PokemonTemplate from "../model/PokemonTemplate";
+
+const defaults = {
+  level: 20,
+  ivs: new Stats(15, 15, 15),
+  moves: new Moves()
+}
 
 function PokemonView({ options, onChange }: {
-  trainer: Trainer,
   options?: string[],
   onChange: Function
 }) {
 
-  const [state, dispatch] = useReducer(pokemonReducer, {
-    name: "",
-    level: 20,
-    ivs: new Stats(15, 15, 15),
-    moves: new Moves()
-  });
-
-  // populate the move selectors
-  const [fastMoves, setFastMoves] = useState([] as DropdownItemProps[]);
-  const [chargedMoves, setChargedMoves] = useState([] as DropdownItemProps[]);
+  const [state, dispatch] = useReducer(pokemonReducer, defaults);
 
   const setName = (name: string) => {
     // reset upon choosing a new pokemon
     dispatch({
-      type: ActionType.FULL, payload: {
-        name,
-        level: 20,
-        ivs: new Stats(15, 15, 15),
-        moves: new Moves()
-      }
+      type: ActionType.FULL, payload: { name, ...defaults }
     });
   }
 
@@ -63,6 +54,38 @@ function PokemonView({ options, onChange }: {
     dispatch({ type: ActionType.FULL, payload: state });
   }
 
+  // populate the move selectors
+  const [fastMoves, setFastMoves] = useState([] as DropdownItemProps[]);
+  const [chargedMoves, setChargedMoves] = useState([] as DropdownItemProps[]);
+
+  const hasOptions = !!options;
+  const updateMoveSelectors = useCallback((pokemon: PokemonTemplate) => {
+    setFastMoves(
+      pokemon.fastMoves.map(translater("moves")).concat(
+        pokemon.eliteFastMoves.map(translater("moves")).map(item => {
+          return {
+            ...item,
+            description: <i>legacy</i>,
+            disabled: hasOptions // rocket pokemon can't have legacy moves
+          }
+        })));
+    setChargedMoves(
+      pokemon.chargedMoves.map(translater("moves")).concat(
+        pokemon.eliteChargedMoves.map(translater("moves")).map(item => {
+          return {
+            ...item,
+            description: <i>legacy</i>,
+            disabled: hasOptions // rocket pokemon can't have legacy moves
+          }
+        })));
+    if (hasOptions) {
+      setFastMove(pokemon.fastMoves[0]);
+    }
+    if (hasOptions) {
+      setChargedMove(pokemon.chargedMoves[0]);
+    }
+  }, [hasOptions]);
+
   // if the name changes, we need to look in the pokedex and update 
   // the possible move selections
   useEffect(() => {
@@ -73,50 +96,26 @@ function PokemonView({ options, onChange }: {
     if (!pokemon) {
       // TODO show error
     } else {
-      setFastMoves(
-        pokemon.fastMoves.map(translater("moves")).concat(
-          pokemon.eliteFastMoves.map(translater("moves")).map(item => {
-            return {
-              ...item,
-              description: <i>legacy</i>,
-              disabled: !!options // rocket pokemon can't have legacy moves
-            }
-          })));
-      setChargedMoves(
-        pokemon.chargedMoves.map(translater("moves")).concat(
-          pokemon.eliteChargedMoves.map(translater("moves")).map(item => {
-            return {
-              ...item,
-              description: <i>legacy</i>,
-              disabled: !!options // rocket pokemon can't have legacy moves
-            }
-          })));
-
-      // default to first move in list, if not already set (via import)
-      if (!state.moves?.fast) {
-        setFastMove(pokemon.fastMoves[0]);
-      }
-      if (!state.moves?.charged_1) {
-        setChargedMove(pokemon.chargedMoves[0]);
-      }
+      updateMoveSelectors(pokemon);
     }
-  }, [state.name]);
+  }, [state.name, updateMoveSelectors]);
 
-  // once a pokemon is selected, train it and show the CP
-  // which will depend on IVs and level
-  if (state.name) {
+  // notify the trainer to update their team
+  useEffect(() => {
+    if (!state.name || !state.moves?.fast || !state.moves?.charged_1) {
+      return;
+    }
     const trainedPokemon = onChange(state);
     const cp = Math.floor(trainedPokemon.CP);
-    if (state.CP != cp) {
+    if (state.CP !== cp) {
       dispatch({ type: ActionType.CP, payload: cp });
     }
-  }
+  }, [state.name, state.level, state.ivs, state.moves]);
 
   return (
     <Segment>
-      <ImportExportView pokemon={state} onImport={handleImport} />
       <Form size="mini">
-        <Grid columns={2}>
+        <Grid columns={2} verticalAlign="bottom">
           <Grid.Column>
             {
               options
@@ -125,7 +124,7 @@ function PokemonView({ options, onChange }: {
             }
           </Grid.Column>
           <Grid.Column>
-            <Statistic horizontal label="CP" value={state.CP} size="small"></Statistic>
+            <Statistic horizontal label="CP" value={state.CP} size="small" />
           </Grid.Column>
         </Grid>
 
@@ -163,6 +162,10 @@ function PokemonView({ options, onChange }: {
           </>
         }
       </Form>
+      {
+        (!options) &&
+        <ImportExportView pokemon={state} onImport={handleImport} />
+      }
     </Segment>
   )
 

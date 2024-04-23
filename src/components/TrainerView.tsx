@@ -27,9 +27,9 @@ function TrainerView({ trainer, rocket }: { trainer: Trainer, rocket?: boolean }
 
   return (
     <SegmentGroup className="team">
-      <PokemonView trainer={trainer} options={lineup.slot_1} onChange={handlePokemonChange(0)} />
-      <PokemonView trainer={trainer} options={lineup.slot_2} onChange={handlePokemonChange(1)} />
-      <PokemonView trainer={trainer} options={lineup.slot_3} onChange={handlePokemonChange(2)} />
+      <PokemonView options={lineup.slot_1} onChange={handlePokemonChange(0)} />
+      <PokemonView options={lineup.slot_2} onChange={handlePokemonChange(1)} />
+      <PokemonView options={lineup.slot_3} onChange={handlePokemonChange(2)} />
     </SegmentGroup>
   )
 

@@ -1,7 +1,7 @@
 import Strategy from "../battle/Strategy";
 import Moves from "./Moves";
 import Pokemon from "./Pokemon";
-import PokemonBase from "./PokemonBase";
+import PokemonTemplate from "./PokemonTemplate";
 import Stats from "./Stats";
 
 class Trainer {
@@ -16,7 +16,7 @@ class Trainer {
         this.level = level;
     }
 
-    train(base: PokemonBase, {
+    train(base: PokemonTemplate, {
         level,
         ivs,
         moves
@@ -44,7 +44,7 @@ class Trainer {
         return CPM[level * 2 - 2];
     }
 
-    static calcBaseStat(base: PokemonBase, ivs: Stats, stat: 'attack' | 'defense' | 'stamina', multiplier: number): number {
+    static calcBaseStat(base: PokemonTemplate, ivs: Stats, stat: 'attack' | 'defense' | 'stamina', multiplier: number): number {
         return (base.stats[stat] + ivs[stat]) * multiplier;
     }
 
@@ -52,7 +52,7 @@ class Trainer {
         return 0.1 * (pokemon.attack * Math.sqrt(pokemon.defense) * Math.sqrt(pokemon.HP));
     }
 
-    static randomizeMoveset(base: PokemonBase, bothCharged: boolean = false): Moves {
+    static randomizeMoveset(base: PokemonTemplate, bothCharged: boolean = false): Moves {
         const moves: Moves = {
             fast: randomMove(base.fastMoves),
             charged_1: randomMove(base.chargedMoves),
