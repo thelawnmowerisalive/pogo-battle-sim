@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Form, FormDropdown, FormInput, Grid, Header, Icon } from "semantic-ui-react";
+import { Button, Container, Dropdown, Form, FormDropdown, FormInput, Grid, Header, Icon, Segment } from "semantic-ui-react";
 import Battle from "../battle/Battle";
 import Turn from "../battle/Turn";
 import Pokedex from "../model/Pokedex";
 import RocketTrainer from "../model/RocketTrainer";
 import Trainer from "../model/Trainer";
 import BattleSideView from "./BattleSideView";
+import GruntSearchModal from "./GruntSearchModal";
 import InstructionsView from "./InstructionsView";
 import TeamStateView from "./TeamStateView";
 import TrainerView from "./TrainerView";
-import { ROCKETS, getRocketMultiplier } from "./rockets";
-import { handleDropdownChange, handleInputChange, stringToDropdownItemProps } from "./utils";
+import { ARLO, CLIFF, GIOVANNI, SIERRA, getRocketMultiplier } from "./rockets";
+import { handleDropdownItemClick, handleInputChange } from "./utils";
 
 const defaults = {
     level: 42,
     trainer: 'Trainer',
-    rocket: ROCKETS[0]
+    rocket: GIOVANNI
 }
 
 function BattleView() {
@@ -72,24 +73,30 @@ function BattleView() {
         setTurn(turn);
     }
 
+    const getRocketDropdownItem = (name: string) => {
+        return <Dropdown.Item onClick={handleDropdownItemClick(handleRocketChange)} key={name} value={name}>{name}</Dropdown.Item>
+    }
+
+    const handleGruntSelect = (value: string) => {
+        handleRocketChange(value);
+    }
+
     return !ready ?
         <div>
-            <p />
-            <p>
+            <Segment vertical>
                 <Header icon textAlign="center">
-                    <Icon name="setting" loading/>
+                    <Icon name="setting" loading />
                     INITIALIZING...
                 </Header>
-            </p>
+            </Segment>
         </div> : (
             <Container>
-                <p />
-                <p>
+                <Segment vertical>
                     <Header icon textAlign="center">
                         <Icon name="rocket" />
                         POGO BATTLE SIM
                     </Header>
-                </p>
+                </Segment>
                 {
                     battle ?
                         <>
@@ -133,9 +140,20 @@ function BattleView() {
 
                             <FormDropdown fluid label="Rocket"
                                 selection
-                                options={ROCKETS.map(stringToDropdownItemProps)}
-                                value={rocket.name}
-                                onChange={handleDropdownChange(handleRocketChange)} />
+                                text={rocket.name}
+                                value={rocket.name}>
+                                <Dropdown.Menu>
+                                    {getRocketDropdownItem(GIOVANNI)}
+                                    <Dropdown.Divider />
+                                    {getRocketDropdownItem(ARLO)}
+                                    {getRocketDropdownItem(CLIFF)}
+                                    {getRocketDropdownItem(SIERRA)}
+                                    <Dropdown.Divider />
+                                    <GruntSearchModal
+                                        trigger={<Dropdown.Item>Grunt <Icon name="search" /></Dropdown.Item>}
+                                        onSelect={handleGruntSelect} />
+                                </Dropdown.Menu>
+                            </FormDropdown>
 
                             <Button onClick={startBattle}>BATTLE</Button>
                         </Form>

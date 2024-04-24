@@ -1,4 +1,4 @@
-import { DropdownItemProps, DropdownProps, InputOnChangeData } from "semantic-ui-react";
+import { DropdownHeaderProps, DropdownItemProps, DropdownProps, InputOnChangeData } from "semantic-ui-react";
 import NamedResource from "../model/NamedResource";
 import Pokedex from "../model/Pokedex";
 
@@ -55,4 +55,10 @@ const handleDropdownChange = (setter: Function) => {
   }
 }
 
-export { Consumer, Mapper, translater, handleDropdownChange, handleInputChange, stringToDropdownItemProps };
+const handleDropdownItemClick = (setter: Function) => {
+  return (_event: any, { value }: DropdownItemProps) => {
+    setter(value);
+  }
+}
+
+export { Consumer, Mapper, translater, handleDropdownChange, handleDropdownItemClick, handleInputChange, stringToDropdownItemProps };

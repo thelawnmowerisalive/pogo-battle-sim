@@ -64,12 +64,12 @@ code {
   margin: 0;
 }
 
-.ui.progress.hp-bar > .bar {
+.ui.progress.hp-bar>.bar {
   position: static;
   min-width: 0;
 }
 
-.ui.progress.hp-bar > .bar::after {
+.ui.progress.hp-bar>.bar::after {
   animation: none;
 }
 
@@ -77,11 +77,18 @@ code {
   margin: 0;
 }
 
-.ui.segments.team > .segment {
+.ui.segments.team>.segment {
   flex: 1 1 0;
 }
 
 .eps {
   font-variant: small-caps;
   padding-left: 2px;
+}
+
+.ui.modal>.content.grunts {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: 6px;
 }

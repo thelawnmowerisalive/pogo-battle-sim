@@ -9,7 +9,7 @@ import { getRocketLineup } from "./rockets";
 function TrainerView({ trainer, rocket }: { trainer: Trainer, rocket?: boolean }) {
 
   const lineup = rocket
-    ? getRocketLineup(trainer.name)
+    ? getRocketLineup(trainer.name) || []
     : { slot_1: undefined, slot_2: undefined, slot_3: undefined };
 
   const handlePokemonChange = (index: number): Function => {
