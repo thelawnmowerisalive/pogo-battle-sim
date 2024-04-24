@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useReducer, useState } from "react";
-import { DropdownItemProps, Form, FormDropdown, FormInput, Grid, InputOnChangeData, Segment, Statistic } from "semantic-ui-react";
+import { DropdownItemProps, Form, FormDropdown, FormInput, Grid, Icon, InputOnChangeData, Segment, Statistic } from "semantic-ui-react";
 import Moves from "../model/Moves";
 import Pokedex from "../model/Pokedex";
 import Pokemon from "../model/Pokemon";
+import PokemonTemplate from "../model/PokemonTemplate";
 import Stats from "../model/Stats";
 import ImportExportView from "./ImportExportView";
 import PokemonSelector from "./PokemonSelector";
 import pokemonReducer, { ActionType } from "./pokemonReducer";
 import { handleDropdownChange, handleInputChange, translater } from "./utils";
-import PokemonTemplate from "../model/PokemonTemplate";
 
 const defaults = {
   level: 20,
@@ -60,24 +60,35 @@ function PokemonView({ options, onChange }: {
 
   const hasOptions = !!options;
   const updateMoveSelectors = useCallback((pokemon: PokemonTemplate) => {
+    const mapper = (legacy: boolean) => {
+      return (item: DropdownItemProps) => {
+        const move = Pokedex.INSTANCE.moves[item.key];
+        const text = item.text + (legacy ? " *" : "");
+        let description;
+        if (move.energy < 0) {
+          // charged move, show required energy
+          description = <span>{-move.energy}<Icon name="lightning" size="small" /></span>;
+        } else {
+          // fast move, show EPS (1 turn is 0.5 seconds)
+          const eps = 2 * move.energy / move.turns;
+          description = <span>{Math.floor(eps) === eps ? eps : eps.toFixed(2)}<span className="eps">eps</span></span>
+        }
+        return {
+          ...item,
+          text,
+          description,
+          disabled: hasOptions && legacy // rocket pokemon can't have legacy moves
+        }
+      }
+    }
+
     setFastMoves(
-      pokemon.fastMoves.map(translater("moves")).concat(
-        pokemon.eliteFastMoves.map(translater("moves")).map(item => {
-          return {
-            ...item,
-            description: <i>legacy</i>,
-            disabled: hasOptions // rocket pokemon can't have legacy moves
-          }
-        })));
+      pokemon.fastMoves.map(translater("moves")).map(mapper(false))
+        .concat(pokemon.eliteFastMoves.map(translater("moves")).map(mapper(true))));
     setChargedMoves(
-      pokemon.chargedMoves.map(translater("moves")).concat(
-        pokemon.eliteChargedMoves.map(translater("moves")).map(item => {
-          return {
-            ...item,
-            description: <i>legacy</i>,
-            disabled: hasOptions // rocket pokemon can't have legacy moves
-          }
-        })));
+      pokemon.chargedMoves.map(translater("moves")).map(mapper(false))
+        .concat(pokemon.eliteChargedMoves.map(translater("moves")).map(mapper(true))));
+
     if (hasOptions) {
       setFastMove(pokemon.fastMoves[0]);
     }
