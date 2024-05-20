@@ -83,7 +83,7 @@ class Battle {
         if (trainer.wakeUpTurn > this.turn.count) {
             return false;
         }
-
+        
         const attacker = left ? this.left : this.right;
         const defender = left ? this.right : this.left;
 
@@ -117,18 +117,21 @@ class Battle {
             this.addToLog(turn);
 
             // check if defender is shielding
+            const opponent = left ? this.rocket : this.trainer;
             var shielding = false;
-            if (trainer.shields) {
-                if (trainer.trainer.strategy.shields === "always") {
-                    shielding = true;
-                } else {
-                    // TODO
+            if (opponent.shields) {
+                switch (opponent.trainer.strategy.shields) {
+                    case "always":
+                        shielding = true;
+                        break;
+                    default:
+                        break;
                 }
             }
 
             if (shielding) {
                 // burn a shield
-                trainer.shields--;
+                opponent.shields--;
                 if (left) {
                     this.turn.right = new Side(ID.SHIELDING);
                 } else {

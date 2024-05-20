@@ -108,14 +108,14 @@ const teams: Teams = {
     slot_3: ["GLALIE", "ABOMASNOW", "FROSLASS"]
   },
   [GRUNTS.FIGHTING_F]: {
-    slot_1: ["MACHOP", "SNEASEL_HISUI", "MAKUHITA"],
+    slot_1: ["MACHOP", "SNEASEL_HISUIAN", "MAKUHITA"],
     slot_2: ["HITMONLEE", "HITMONCHAN", "HITMONTOP"],
     slot_3: ["MACHAMP", "INFERNAPE", "TOXICROAK"]
   },
   [GRUNTS.POISON_F]: {
-    slot_1: ["SNEASEL_HISUI", "FOONGUS"],
+    slot_1: ["SNEASEL_HISUIAN", "FOONGUS"],
     slot_2: ["NIDORINA", "NIDORINO"],
-    slot_3: ["WEEZING", "TOXICROAK", "AMOONGUS"]
+    slot_3: ["WEEZING", "TOXICROAK", "AMOONGUSS"]
   },
   [GRUNTS.GROUND_M]: {
     slot_1: ["DIGLETT_ALOLA", "WOOPER", "DRILBUR"],
@@ -133,9 +133,9 @@ const teams: Teams = {
     slot_3: ["METAGROSS", "GALLADE", "REUNICLUS"]
   },
   [GRUNTS.BUG_M]: {
-    slot_1: ["SCYTHER", "SCHUCKLE", "DWEBBLE"],
+    slot_1: ["SCYTHER", "SHUCKLE", "DWEBBLE"],
     slot_2: ["WEEDLE", "SHUCKLE", "SKORUPI"],
-    slot_3: ["BEEDRIL", "FORRETRESS", "SCIZOR"]
+    slot_3: ["BEEDRILL", "FORRETRESS", "SCIZOR"]
   },
   [GRUNTS.ROCK_M]: {
     slot_1: ["ONIX", "CRANIDOS", "SHIELDON"],

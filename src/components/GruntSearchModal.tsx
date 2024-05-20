@@ -49,7 +49,7 @@ function GruntSearchModal({ trigger, onSelect }: {
     strings.forEach(quote => {
       items.push(
         <Label
-          as="a" onClick={handleSelect} value={key}
+          as="a" onClick={handleSelect} value={key} key={key}
           style={{ backgroundColor: COLORS[type] }}>
           <Icon name={icon} />
           {quote}

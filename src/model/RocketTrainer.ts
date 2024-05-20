@@ -9,6 +9,8 @@ class RocketTrainer extends Trainer {
     constructor(name: string, level: number, rank: number = 1) {
         super(name, level);
         this.rank = rank;
+
+        this.strategy.shields = "never";
     }
 
     train(base: PokemonTemplate, {
